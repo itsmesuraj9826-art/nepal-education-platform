@@ -1,0 +1,70 @@
+/* ── Nepal Education Platform — Global Styles ─────────── */
+
+:root {
+  --nepal-blue: #003893;
+  --nepal-red:  #DC143C;
+  --sidebar-width: 260px;
+}
+
+/* ── Layout ─────────────────────────────────────────────── */
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f5f6fa; }
+
+#wrapper { min-height: 100vh; }
+
+#sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  min-height: 100vh;
+  background: #0a1628 !important;
+  transition: width 0.25s ease;
+  overflow: hidden;
+}
+
+#sidebar.collapsed {
+  width: 60px;
+  min-width: 60px;
+}
+
+#sidebar.collapsed .sidebar-brand div,
+#sidebar.collapsed .nav-link span,
+#sidebar.collapsed .nav-link .text-white-50 {
+  display: none;
+}
+
+#page-content { min-width: 0; }
+
+/* ── Sidebar links ──────────────────────────────────────── */
+.sidebar-link {
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  margin: 1px 8px;
+  font-size: .875rem;
+  transition: background .15s;
+}
+.sidebar-link:hover  { background: rgba(255,255,255,.08) !important; }
+.sidebar-link.active { background: var(--nepal-blue) !important; }
+
+/* ── Colors ─────────────────────────────────────────────── */
+.bg-nepal-dark  { background: #0a1628 !important; }
+.text-nepal     { color: var(--nepal-blue) !important; }
+
+/* ── Cards ──────────────────────────────────────────────── */
+.card { transition: box-shadow .2s; }
+.card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08) !important; }
+
+/* ── Tables ─────────────────────────────────────────────── */
+.table th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: #6c757d; }
+.table td { font-size: .9rem; vertical-align: middle; }
+
+/* ── Badges ─────────────────────────────────────────────── */
+.badge { font-weight: 500; letter-spacing: .02em; }
+
+/* ── Progress ───────────────────────────────────────────── */
+.progress { border-radius: 99px; background: #e9ecef; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #sidebar { position: fixed; z-index: 1050; height: 100%; transform: translateX(-100%); }
+  #sidebar.show { transform: translateX(0); }
+  #page-content { width: 100%; }
+}

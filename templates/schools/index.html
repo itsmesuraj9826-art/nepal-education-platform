@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Schools{% endblock %}
+{% block page_title %}Government Schools Registry{% endblock %}
+
+{% block content %}
+<!-- Search & Filters -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form class="row g-3" method="GET">
+      <div class="col-md-5">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Search schools..."
+                 value="{{ search }}">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+          <option value="">All</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-filter me-1"></i>Filter
+        </button>
+      </div>
+      <div class="col-md-3 text-end">
+        <form method="POST" action="{{ url_for('schools.sync') }}" class="d-inline">
+          <button type="submit" class="btn btn-outline-success"
+                  onclick="return confirm('Trigger EMIS sync?')">
+            <i class="bi bi-arrow-repeat me-1"></i>Sync from EMIS
+          </button>
+        </form>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Schools Table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+    <span class="fw-semibold">
+      {{ schools.total }} schools found
+    </span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0" id="schools-table">
+        <thead class="table-light">
+          <tr>
+            <th>Code</th>
+            <th>School Name</th>
+            <th>Level</th>
+            <th>District</th>
+            <th>Municipality</th>
+            <th>Teachers</th>
+            <th>Students</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for school in schools.items %}
+          <tr>
+            <td><code class="text-primary">{{ school.school_code }}</code></td>
+            <td>
+              <div class="fw-semibold">{{ school.name_en }}</div>
+              {% if school.name_np %}
+              <div class="text-muted small">{{ school.name_np }}</div>
+              {% endif %}
+            </td>
+            <td><span class="badge bg-info-subtle text-info border border-info-subtle">{{ school.school_level }}</span></td>
+            <td>{{ school.district_id or '—' }}</td>
+            <td>{{ school.municipality_id or '—' }}</td>
+            <td class="text-center">{{ school.num_teachers }}</td>
+            <td class="text-center">{{ school.num_students }}</td>
+            <td>
+              {% if school.status == 'active' %}
+                <span class="badge bg-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ school.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('schools.detail', school_id=school.id) }}"
+                 class="btn btn-sm btn-outline-primary">View</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center text-muted py-5">
+              No schools found.
+              <a href="{{ url_for('schools.sync') }}" class="ms-2">Run EMIS sync →</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Pagination -->
+  {% if schools.pages > 1 %}
+  <div class="card-footer bg-white border-0 d-flex justify-content-center">
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if schools.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ schools.prev_num }}&q={{ search }}">‹</a>
+        </li>
+        {% endif %}
+        {% for p in schools.iter_pages() %}
+          {% if p %}
+          <li class="page-item {{ 'active' if p == schools.page }}">
+            <a class="page-link" href="?page={{ p }}&q={{ search }}">{{ p }}</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+        {% if schools.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ schools.next_num }}&q={{ search }}">›</a>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

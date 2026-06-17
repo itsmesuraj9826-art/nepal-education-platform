@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}Teachers{% endblock %}
+{% block page_title %}Teacher Registry{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body">
+    <form class="row g-3" method="GET">
+      <div class="col-md-4">
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" class="form-control" placeholder="Search teachers..."
+                 value="{{ search }}">
+        </div>
+      </div>
+      <div class="col-md-2">
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          <option value="Outstanding">Outstanding</option>
+          <option value="Excellent">Excellent</option>
+          <option value="Good">Good</option>
+          <option value="Satisfactory">Satisfactory</option>
+          <option value="Improvement Required">Needs Improvement</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+          <i class="bi bi-filter me-1"></i>Filter
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Teacher ID</th>
+            <th>Name</th>
+            <th>Subject</th>
+            <th>Qualification</th>
+            <th>School</th>
+            <th>TPDI Score</th>
+            <th>Category</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for teacher in teachers.items %}
+          <tr>
+            <td><code>{{ teacher.teacher_id }}</code></td>
+            <td>
+              <div class="fw-semibold">{{ teacher.full_name }}</div>
+              <div class="text-muted small">{{ teacher.gender }}</div>
+            </td>
+            <td>{{ teacher.subject_specialization or '—' }}</td>
+            <td>{{ teacher.highest_qualification or '—' }}</td>
+            <td>{{ teacher.school_id or '—' }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1" style="height:6px">
+                  <div class="progress-bar
+                    {% if teacher.tpdi_score >= 90 %}bg-success
+                    {% elif teacher.tpdi_score >= 65 %}bg-primary
+                    {% elif teacher.tpdi_score >= 50 %}bg-warning
+                    {% else %}bg-danger{% endif %}"
+                    style="width:{{ teacher.tpdi_score }}%"></div>
+                </div>
+                <small>{{ teacher.tpdi_score | round(1) }}</small>
+              </div>
+            </td>
+            <td>
+              {% set cat = teacher.tpdi_category %}
+              {% if cat == 'Outstanding' %}
+                <span class="badge bg-success">{{ cat }}</span>
+              {% elif cat == 'Excellent' %}
+                <span class="badge bg-primary">{{ cat }}</span>
+              {% elif cat == 'Good' %}
+                <span class="badge bg-info text-dark">{{ cat }}</span>
+              {% elif cat == 'Satisfactory' %}
+                <span class="badge bg-warning text-dark">{{ cat }}</span>
+              {% else %}
+                <span class="badge bg-danger">{{ cat or 'N/A' }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('teachers.detail', teacher_id=teacher.id) }}"
+                 class="btn btn-sm btn-outline-primary">View</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="text-center text-muted py-5">No teachers found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

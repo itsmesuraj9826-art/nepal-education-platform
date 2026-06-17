@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Generate Exam{% endblock %}
+{% block page_title %}AI Exam Generator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white border-0">
+        <h5 class="mb-0 fw-bold">
+          <i class="bi bi-magic me-2 text-primary"></i>AI-Powered Exam Generation
+        </h5>
+        <p class="text-muted small mt-1 mb-0">
+          Upload a curriculum PDF or let the AI generate questions from subject knowledge.
+        </p>
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Subject *</label>
+              <select name="subject" class="form-select" required>
+                <option value="">Select subject</option>
+                <option>Mathematics</option>
+                <option>Science</option>
+                <option>English</option>
+                <option>Nepali</option>
+                <option>Social Studies</option>
+                <option>Computer Science</option>
+                <option>Physics</option>
+                <option>Chemistry</option>
+                <option>Biology</option>
+                <option>Accountancy</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Grade *</label>
+              <select name="grade" class="form-select" required>
+                {% for g in range(1, 13) %}
+                <option value="{{ g }}">Grade {{ g }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Exam Type *</label>
+              <select name="exam_type" class="form-select" required>
+                <option value="unit">Unit Test</option>
+                <option value="terminal">Terminal</option>
+                <option value="final">Final Examination</option>
+                <option value="mock">Mock / Practice</option>
+                <option value="weekly">Weekly Quiz</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Difficulty Level *</label>
+              <select name="difficulty" class="form-select" required>
+                <option value="mixed">Mixed (Recommended)</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Total Marks</label>
+              <input type="number" name="total_marks" class="form-control"
+                     value="100" min="10" max="500">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">School (optional)</label>
+              <input type="number" name="school_id" class="form-control"
+                     placeholder="School ID">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">
+                Curriculum PDF <span class="text-muted">(optional)</span>
+              </label>
+              <input type="file" name="curriculum_pdf" class="form-control"
+                     accept=".pdf">
+              <div class="form-text">
+                Upload NEB textbook, teacher guide, or reference PDF.
+                AI will extract chapters and topics automatically.
+              </div>
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary px-5 py-2">
+                <i class="bi bi-magic me-2"></i>Generate Exam Paper
+              </button>
+              <a href="{{ url_for('exams.index') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
