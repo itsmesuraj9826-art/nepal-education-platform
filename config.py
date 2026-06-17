@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from dotenv import load_dotenv
+from sqlalchemy.pool import NullPool
 
 load_dotenv()
 
@@ -32,11 +33,11 @@ class Config:
 
     SQLALCHEMY_DATABASE_URI = _db_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Vercel is serverless — NullPool prevents connection leaks.
+    # Each request opens and closes its own DB connection.
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_recycle': 280,
         'pool_pre_ping': True,
-        'pool_size': 5,
-        'max_overflow': 2,
+        'poolclass': NullPool,
     }
 
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-dev-secret')

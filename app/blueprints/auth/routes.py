@@ -12,8 +12,9 @@ from datetime import datetime
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username') or request.json.get('username')
-        password = request.form.get('password') or request.json.get('password')
+        _json = request.get_json(silent=True) or {}
+        username = request.form.get('username') or _json.get('username')
+        password = request.form.get('password') or _json.get('password')
 
         user = User.query.filter_by(username=username, is_active=True).first()
         if not user or not user.check_password(password):

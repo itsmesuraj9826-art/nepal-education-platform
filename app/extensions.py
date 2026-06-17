@@ -11,4 +11,8 @@ migrate = Migrate()
 jwt = JWTManager()
 cors = CORS()
 mail = Mail()
-limiter = Limiter(key_func=get_remote_address, default_limits=['200 per day', '50 per hour'])
+limiter = Limiter(
+    key_func=get_remote_address,
+    storage_uri="memory://",
+    default_limits=['200 per day', '50 per hour'],
+)
