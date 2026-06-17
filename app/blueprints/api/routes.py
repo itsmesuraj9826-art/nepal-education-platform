@@ -13,7 +13,19 @@ from app.extensions import db
 
 @api_bp.route('/health')
 def health():
-    return jsonify({'status': 'ok', 'service': 'Nepal Education Platform API v1'})
+    import traceback as _tb
+    try:
+        result = db.session.execute(db.text('SELECT 1 AS ping')).fetchone()
+        db_ok = True
+        db_msg = str(result[0])
+    except Exception as e:
+        db_ok = False
+        db_msg = f'{type(e).__name__}: {e}\n{_tb.format_exc()}'
+    return jsonify({
+        'status': 'ok' if db_ok else 'db_error',
+        'db_connected': db_ok,
+        'db_detail': db_msg,
+    }), 200 if db_ok else 500
 
 
 # ── Schools ───────────────────────────────────────────────

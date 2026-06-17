@@ -12,32 +12,41 @@ from datetime import datetime
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        _json = request.get_json(silent=True) or {}
-        username = request.form.get('username') or _json.get('username')
-        password = request.form.get('password') or _json.get('password')
+        import traceback as _tb
+        try:
+            _json = request.get_json(silent=True) or {}
+            username = request.form.get('username') or _json.get('username')
+            password = request.form.get('password') or _json.get('password')
 
-        user = User.query.filter_by(username=username, is_active=True).first()
-        if not user or not user.check_password(password):
+            user = User.query.filter_by(username=username, is_active=True).first()
+            if not user or not user.check_password(password):
+                if request.is_json:
+                    return jsonify({'error': 'Invalid credentials'}), 401
+                flash('Invalid username or password.', 'danger')
+                return render_template('auth/login.html')
+
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+
+            access_token  = create_access_token(identity=str(user.id))
+            refresh_token = create_refresh_token(identity=str(user.id))
+
             if request.is_json:
-                return jsonify({'error': 'Invalid credentials'}), 401
-            flash('Invalid username or password.', 'danger')
-            return render_template('auth/login.html')
+                return jsonify({'access_token': access_token, 'refresh_token': refresh_token,
+                                'user': user.to_dict()})
 
-        user.last_login = datetime.utcnow()
-        db.session.commit()
+            # Web login — set cookie and redirect by role
+            from flask import session
+            session['user_id'] = user.id
+            session['role']    = user.role
+            return redirect(url_for(f'dashboard.{user.role}'))
 
-        access_token  = create_access_token(identity=str(user.id))
-        refresh_token = create_refresh_token(identity=str(user.id))
-
-        if request.is_json:
-            return jsonify({'access_token': access_token, 'refresh_token': refresh_token,
-                            'user': user.to_dict()})
-
-        # Web login — set cookie and redirect by role
-        from flask import session
-        session['user_id'] = user.id
-        session['role']    = user.role
-        return redirect(url_for(f'dashboard.{user.role}'))
+        except Exception as e:
+            return jsonify({
+                'login_error': str(e),
+                'error_type': type(e).__name__,
+                'traceback': _tb.format_exc(),
+            }), 500
 
     return render_template('auth/login.html')
 
