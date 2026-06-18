@@ -72,8 +72,8 @@
               {% endif %}
             </td>
             <td><span class="badge bg-info-subtle text-info border border-info-subtle">{{ school.school_level }}</span></td>
-            <td>{{ school.district_id or '—' }}</td>
-            <td>{{ school.municipality_id or '—' }}</td>
+            <td>{{ school.district.name if school.district else '—' }}</td>
+            <td>{{ school.municipality.name if school.municipality else '—' }}</td>
             <td class="text-center">{{ school.num_teachers }}</td>
             <td class="text-center">{{ school.num_students }}</td>
             <td>

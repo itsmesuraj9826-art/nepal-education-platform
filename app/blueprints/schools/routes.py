@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash
+from flask import render_template, request, jsonify, redirect, url_for, flash, session
 from app.blueprints.schools import schools_bp
 from app.models.school import School
 from app.extensions import db
@@ -33,12 +33,36 @@ def detail(school_id):
     return render_template('schools/detail.html', school=school)
 
 
-@schools_bp.route('/sync', methods=['POST'])
+@schools_bp.route('/sync', methods=['GET', 'POST'])
 def sync():
     """Trigger manual EMIS sync."""
     result = SchoolSyncService.run_sync()
     flash(f"Sync complete: {result['added']} added, {result['updated']} updated.", 'success')
     return redirect(url_for('schools.index'))
+
+
+@schools_bp.route('/setup-profile', methods=['GET', 'POST'])
+def setup_profile():
+    """School fills in its own principal name, phone, address on first login."""
+    school_id = session.get('school_id')
+    if not school_id:
+        return redirect(url_for('auth.login'))
+    school = School.query.get_or_404(school_id)
+
+    if request.method == 'POST':
+        school.principal_name = request.form.get('principal_name', '').strip() or school.principal_name
+        school.phone          = request.form.get('phone', '').strip() or school.phone
+        school.email          = request.form.get('email', '').strip() or school.email
+        school.website        = request.form.get('website', '').strip() or school.website
+        school.address        = request.form.get('address', '').strip() or school.address
+        ward = request.form.get('ward_number', '').strip()
+        if ward.isdigit():
+            school.ward_number = int(ward)
+        db.session.commit()
+        flash('School profile updated successfully.', 'success')
+        return redirect(url_for('dashboard.school'))
+
+    return render_template('schools/setup_profile.html', school=school)
 
 
 @schools_bp.route('/api/search')

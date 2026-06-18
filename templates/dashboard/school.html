@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}School Dashboard{% endblock %}
+{% block page_title %}
+  {{ school.name_en if school else 'School Dashboard' }}
+{% endblock %}
+
+{% block content %}
+
+{% if school and not school.principal_name %}
+<div class="alert alert-warning d-flex align-items-center justify-content-between mb-4">
+  <div><i class="bi bi-exclamation-triangle-fill me-2"></i>
+    Your school profile is incomplete. Please add your principal name and contact details.
+  </div>
+  <a href="{{ url_for('schools.setup_profile') }}" class="btn btn-warning btn-sm text-nowrap ms-3">
+    Complete Profile
+  </a>
+</div>
+{% endif %}
+
+{% if school %}
+<!-- School Info Banner -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-body d-flex flex-wrap gap-4 align-items-center">
+    <div class="flex-grow-1">
+      <h4 class="mb-1 fw-bold">{{ school.name_en }}</h4>
+      {% if school.name_np %}<div class="text-muted mb-2">{{ school.name_np }}</div>{% endif %}
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge bg-primary">{{ school.school_code }}</span>
+        <span class="badge bg-secondary">{{ school.school_type or 'Government' }}</span>
+        <span class="badge bg-info text-dark">{{ school.school_level or '—' }}</span>
+        {% if school.status == 'active' %}
+          <span class="badge bg-success">Active</span>
+        {% else %}
+          <span class="badge bg-danger">{{ school.status | title }}</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="text-end text-muted small">
+      {% if school.district %}
+        <div><i class="bi bi-geo-alt"></i> {{ school.district.name }}</div>
+      {% endif %}
+      {% if school.municipality %}
+        <div>{{ school.municipality.name }}</div>
+      {% endif %}
+      {% if school.ward_number %}
+        <div>Ward {{ school.ward_number }}</div>
+      {% endif %}
+      {% if school.phone %}
+        <div><i class="bi bi-telephone"></i> {{ school.phone }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-primary">{{ stats.total_teachers }}</div>
+      <div class="text-muted small">Teachers</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-success">{{ stats.total_students }}</div>
+      <div class="text-muted small">Students</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-info">{{ stats.total_male }}</div>
+      <div class="text-muted small">Male Students</div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-warning">{{ stats.total_female }}</div>
+      <div class="text-muted small">Female Students</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Links -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <a href="{{ url_for('teachers.index') }}" class="card border-0 shadow-sm text-decoration-none text-dark">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="fs-3 text-primary">&#128101;</div>
+        <div>
+          <div class="fw-semibold">Teachers</div>
+          <div class="small text-muted">View &amp; manage staff</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('students.index') }}" class="card border-0 shadow-sm text-decoration-none text-dark">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="fs-3 text-success">&#127979;</div>
+        <div>
+          <div class="fw-semibold">Students</div>
+          <div class="small text-muted">Enrollment &amp; records</div>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-4">
+    <a href="{{ url_for('attendance.index') }}" class="card border-0 shadow-sm text-decoration-none text-dark">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="fs-3 text-warning">&#128197;</div>
+        <div>
+          <div class="fw-semibold">Attendance</div>
+          <div class="small text-muted">Daily records</div>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- Teachers Table -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+    <span>Teachers</span>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('teachers.add') }}" class="btn btn-sm btn-success">
+        <i class="bi bi-person-plus me-1"></i>Add Teacher
+      </a>
+      <a href="{{ url_for('teachers.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Name</th><th>Subject</th><th>Phone</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for t in teachers[:10] %}
+          <tr>
+            <td class="fw-semibold">{{ t.full_name }}</td>
+            <td>{{ t.subject or '—' }}</td>
+            <td>{{ t.phone or '—' }}</td>
+            <td>
+              {% if t.is_active %}
+                <span class="badge bg-success">Active</span>
+              {% else %}
+                <span class="badge bg-secondary">Inactive</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No teachers registered.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Students -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white fw-semibold d-flex justify-content-between align-items-center">
+    <span>Recent Students</span>
+    <a href="{{ url_for('students.index') }}" class="btn btn-sm btn-outline-success">View All</a>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Name</th><th>Grade</th><th>Gender</th><th>Enrollment</th></tr>
+        </thead>
+        <tbody>
+          {% for s in students[:10] %}
+          <tr>
+            <td class="fw-semibold">{{ s.full_name }}</td>
+            <td>{{ s.grade or '—' }}</td>
+            <td>{{ s.gender | title if s.gender else '—' }}</td>
+            <td>{{ s.enrollment_date.strftime('%Y-%m-%d') if s.enrollment_date else '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-center text-muted py-4">No students registered.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

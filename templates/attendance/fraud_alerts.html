@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Fraud Alerts{% endblock %}
+{% block page_title %}Attendance Fraud Alerts{% endblock %}
+{% block content %}
+<div class="alert alert-warning d-flex align-items-center mb-4">
+  <i class="bi bi-shield-exclamation fs-4 me-3"></i>
+  <div><strong>{{ records|length }} suspicious attendance records</strong> flagged by the AI fraud detection system.</div>
+</div>
+<div class="card border-0 shadow-sm">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Teacher</th><th>Date</th><th>School</th><th>Method</th><th>Fraud Score</th><th>Reason</th></tr>
+        </thead>
+        <tbody>
+          {% for r in records %}
+          <tr>
+            <td>{{ r.teacher_id }}</td>
+            <td>{{ r.date }}</td>
+            <td>{{ r.school_id }}</td>
+            <td>{{ r.method or '—' }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div class="progress flex-grow-1" style="height:6px;width:80px">
+                  <div class="progress-bar bg-danger" style="width:{{ (r.fraud_score * 100)|int }}%"></div>
+                </div>
+                <span class="small text-danger fw-bold">{{ (r.fraud_score * 100)|int }}%</span>
+              </div>
+            </td>
+            <td>{{ r.fraud_reason or '—' }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="text-center text-muted py-5">
+            <i class="bi bi-shield-check fs-1 d-block mb-2 text-success opacity-50"></i>
+            No fraud alerts. All attendance records look clean.
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

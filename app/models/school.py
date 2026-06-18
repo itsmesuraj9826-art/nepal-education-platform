@@ -4,10 +4,11 @@ from app.extensions import db
 
 class Province(db.Model):
     __tablename__ = 'provinces'
-    id   = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    name_np = db.Column(db.String(100))
-    code = db.Column(db.String(10))
+    id       = db.Column(db.Integer, primary_key=True)
+    name     = db.Column(db.String(100), nullable=False)
+    name_np  = db.Column(db.String(100))
+    code     = db.Column(db.String(10))
+    edd_head = db.Column(db.String(150))   # Education Development Directorate head name
     districts = db.relationship('District', backref='province', lazy='dynamic')
 
 
@@ -27,9 +28,8 @@ class Municipality(db.Model):
     district_id = db.Column(db.Integer, db.ForeignKey('districts.id'), nullable=False)
     name        = db.Column(db.String(150), nullable=False)
     name_np     = db.Column(db.String(150))
-    mun_type    = db.Column(db.String(30))   # Metropolitan | Sub-Metropolitan | Municipality | Rural Municipality
+    mun_type    = db.Column(db.String(30))
     code        = db.Column(db.String(10))
-    schools = db.relationship('School', backref='municipality', lazy='dynamic')
 
 
 class School(db.Model):
@@ -50,6 +50,11 @@ class School(db.Model):
     province_id     = db.Column(db.Integer, db.ForeignKey('provinces.id'))
     district_id     = db.Column(db.Integer, db.ForeignKey('districts.id'))
     municipality_id = db.Column(db.Integer, db.ForeignKey('municipalities.id'))
+
+    # Explicit relationships for name lookups
+    province     = db.relationship('Province', foreign_keys=[province_id])
+    district     = db.relationship('District', foreign_keys=[district_id])
+    municipality = db.relationship('Municipality', foreign_keys=[municipality_id])
     ward_number     = db.Column(db.Integer)
     address         = db.Column(db.Text)
     latitude        = db.Column(db.Float)

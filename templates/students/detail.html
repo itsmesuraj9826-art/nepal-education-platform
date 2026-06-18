@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}{{ student.first_name }} {{ student.last_name }}{% endblock %}
+{% block page_title %}Student Detail{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0">{{ student.first_name }} {{ student.last_name }}</h4>
+    <div class="text-muted small">{{ student.student_id }}</div>
+  </div>
+  <a href="{{ url_for('students.index') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Personal Information</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">Full Name</th><td>{{ student.first_name }} {{ student.last_name }}</td></tr>
+          <tr><th class="text-muted">Gender</th><td>{{ student.gender or '—' }}</td></tr>
+          <tr><th class="text-muted">Date of Birth</th><td>{{ student.date_of_birth or '—' }}</td></tr>
+          <tr><th class="text-muted">Nationality</th><td>{{ student.nationality or '—' }}</td></tr>
+          <tr><th class="text-muted">Guardian</th><td>{{ student.guardian_name or '—' }}</td></tr>
+          <tr><th class="text-muted">Guardian Phone</th><td>{{ student.guardian_phone or '—' }}</td></tr>
+          <tr><th class="text-muted">Address</th><td>{{ student.address or '—' }}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Academic Information</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">Grade</th><td>{{ student.current_grade or '—' }}</td></tr>
+          <tr><th class="text-muted">Section</th><td>{{ student.section or '—' }}</td></tr>
+          <tr><th class="text-muted">Roll No.</th><td>{{ student.roll_number or '—' }}</td></tr>
+          <tr><th class="text-muted">Academic Year</th><td>{{ student.academic_year or '—' }}</td></tr>
+          <tr><th class="text-muted">Dropout Risk</th><td>
+            <div class="progress" style="height:8px;width:120px">
+              <div class="progress-bar bg-{{ 'danger' if student.dropout_risk_score > 0.6 else ('warning' if student.dropout_risk_score > 0.3 else 'success') }}"
+                   style="width:{{ (student.dropout_risk_score * 100)|int }}%"></div>
+            </div>
+            <small class="text-muted">{{ (student.dropout_risk_score * 100)|int }}%</small>
+          </td></tr>
+          <tr><th class="text-muted">Status</th><td>
+            <span class="badge bg-{{ 'success' if student.is_active else 'secondary' }}">{{ 'Active' if student.is_active else 'Inactive' }}</span>
+          </td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% if results %}
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Exam Results</div>
+      <div class="card-body p-0">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Exam</th><th>Marks</th><th>Total</th><th>%</th><th>Grade</th><th>Rank</th></tr>
+          </thead>
+          <tbody>
+            {% for r in results %}
+            <tr>
+              <td>{{ r.exam.title if r.exam else '—' }}</td>
+              <td>{{ r.marks_obtained or '—' }}</td>
+              <td>{{ r.total_marks or '—' }}</td>
+              <td>{{ r.percentage|round(1) if r.percentage else '—' }}%</td>
+              <td><span class="badge bg-primary">{{ r.grade or '—' }}</span></td>
+              <td>{{ r.rank_in_class or '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

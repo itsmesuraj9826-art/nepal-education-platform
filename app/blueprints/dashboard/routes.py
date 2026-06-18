@@ -64,20 +64,48 @@ def district():
     return render_template('dashboard/district.html', stats=stats, municipalities=muns)
 
 
-@dashboard_bp.route('/provincial')
+@dashboard_bp.route('/provincial', methods=['GET', 'POST'])
 @login_required
 def provincial():
     province_id = session.get('province_id')
-    from app.models.school import District
+    from app.models.school import District, Province
+    province  = Province.query.get(province_id)
     districts = District.query.filter_by(province_id=province_id).all()
-    schools = School.query.filter_by(province_id=province_id, status='active').all()
+    schools   = School.query.filter_by(province_id=province_id, status='active').all()
+
+    if request.method == 'POST' and session.get('role') == 'provincial':
+        edd_head = request.form.get('edd_head', '').strip()
+        if province and edd_head:
+            province.edd_head = edd_head
+            db.session.commit()
+            flash('EDD head updated.', 'success')
+        return redirect(url_for('dashboard.provincial'))
+
     stats = {
-        'total_schools': len(schools),
+        'total_schools':   len(schools),
         'total_districts': len(districts),
-        'total_teachers': sum(s.num_teachers for s in schools),
-        'total_students': sum(s.num_students for s in schools),
+        'total_teachers':  sum(s.num_teachers or 0 for s in schools),
+        'total_students':  sum(s.num_students or 0 for s in schools),
     }
-    return render_template('dashboard/provincial.html', stats=stats, districts=districts)
+    return render_template('dashboard/provincial.html',
+                           stats=stats, districts=districts, province=province)
+
+
+@dashboard_bp.route('/school')
+@login_required
+def school():
+    school_id = session.get('school_id')
+    school = School.query.get(school_id)
+    teachers = Teacher.query.filter_by(school_id=school_id, is_active=True).all()
+    students = Student.query.filter_by(school_id=school_id, is_active=True).all()
+    stats = {
+        'total_teachers': len(teachers),
+        'total_students': len(students),
+        'total_male':   sum(1 for s in students if s.gender == 'male'),
+        'total_female': sum(1 for s in students if s.gender == 'female'),
+    }
+    return render_template('dashboard/school.html', school=school, stats=stats,
+                           teachers=teachers, students=students)
 
 
 @dashboard_bp.route('/federal')
@@ -86,4 +114,22 @@ def federal():
     stats = _national_stats()
     from app.models.school import Province
     provinces = Province.query.all()
-    return render_template('dashboard/federal.html', stats=stats, provinces=provinces)
+    # Enrich provinces with their school/student/teacher counts
+    province_stats = []
+    for p in provinces:
+        p_schools = School.query.filter_by(province_id=p.id, status='active').all()
+        province_stats.append({
+            'province':       p,
+            'total_schools':  len(p_schools),
+            'total_students': sum(s.num_students or 0 for s in p_schools),
+            'total_teachers': sum(s.num_teachers or 0 for s in p_schools),
+            'edd_head':       p.edd_head or '—',
+        })
+    minister = {
+        'name':  'Mahabir Pun',
+        'title': 'Minister for Education, Science and Technology',
+        'since': 'September 2025',
+        'govt':  'Government of Nepal',
+    }
+    return render_template('dashboard/federal.html',
+                           stats=stats, province_stats=province_stats, minister=minister)

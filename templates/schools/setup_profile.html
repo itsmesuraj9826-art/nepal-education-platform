@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}Complete School Profile{% endblock %}
+{% block page_title %}Complete Your School Profile{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+
+    <div class="alert alert-info d-flex align-items-center gap-2 mb-4">
+      <i class="bi bi-info-circle-fill fs-5"></i>
+      <div>
+        You're logged in as <strong>{{ school.name_en }}</strong> ({{ school.school_code }}).
+        Please complete your school's profile so administrators can see accurate information.
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold fs-6">
+        <i class="bi bi-building me-2 text-primary"></i>School Information
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="row g-3">
+
+            <!-- Read-only info -->
+            <div class="col-md-6">
+              <label class="form-label text-muted small">School Code</label>
+              <input type="text" class="form-control bg-light" value="{{ school.school_code }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Province</label>
+              <input type="text" class="form-control bg-light"
+                     value="{{ school.province.name if school.province else '—' }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted small">District</label>
+              <input type="text" class="form-control bg-light"
+                     value="{{ school.district.name if school.district else '—' }}" readonly>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-muted small">Municipality</label>
+              <input type="text" class="form-control bg-light"
+                     value="{{ school.municipality.name if school.municipality else '—' }}" readonly>
+            </div>
+
+            <div class="col-12"><hr class="my-1"></div>
+
+            <!-- Editable fields -->
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">
+                Principal / Head Teacher Name <span class="text-danger">*</span>
+              </label>
+              <input type="text" name="principal_name" class="form-control"
+                     value="{{ school.principal_name or '' }}"
+                     placeholder="e.g. Ram Prasad Sharma" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Ward Number</label>
+              <input type="number" name="ward_number" class="form-control"
+                     value="{{ school.ward_number or '' }}" placeholder="e.g. 5" min="1" max="35">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">School Phone</label>
+              <input type="text" name="phone" class="form-control"
+                     value="{{ school.phone or '' }}" placeholder="e.g. 01-4XXXXXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">School Email</label>
+              <input type="email" name="email" class="form-control"
+                     value="{{ school.email or '' }}" placeholder="school@example.edu.np">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Website</label>
+              <input type="url" name="website" class="form-control"
+                     value="{{ school.website or '' }}" placeholder="https://yourschool.edu.np">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Full Address</label>
+              <textarea name="address" class="form-control" rows="2"
+                        placeholder="Street / Tole, Ward No.">{{ school.address or '' }}</textarea>
+            </div>
+
+            <div class="col-12 d-flex gap-2 mt-2">
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-check-circle me-1"></i>Save Profile
+              </button>
+              <a href="{{ url_for('dashboard.school') }}" class="btn btn-outline-secondary">
+                Skip for now
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Teachers prompt -->
+    <div class="card border-0 shadow-sm mt-4">
+      <div class="card-header bg-white fw-semibold fs-6">
+        <i class="bi bi-people me-2 text-success"></i>After saving — add your teachers
+      </div>
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div class="text-muted small">
+          Add each teacher's name, subject, and contact so the provincial administration can see your staff.
+        </div>
+        <a href="{{ url_for('teachers.add') }}" class="btn btn-outline-success btn-sm ms-3 text-nowrap">
+          <i class="bi bi-person-plus me-1"></i>Add Teacher
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

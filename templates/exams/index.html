@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Examinations{% endblock %}
+{% block page_title %}Examination Management{% endblock %}
+
+{% block content %}
+<!-- Header actions -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <p class="text-muted mb-0">AI-generated exam papers and result tracking</p>
+  </div>
+  <a href="{{ url_for('exams.generate') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> Generate New Exam
+  </a>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-primary">{{ exams.total }}</div>
+      <div class="text-muted small">Total Exams</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-success">{{ exams.items | selectattr('status','eq','published') | list | length }}</div>
+      <div class="text-muted small">Published</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-warning">{{ exams.items | selectattr('status','eq','draft') | list | length }}</div>
+      <div class="text-muted small">Drafts</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm text-center py-3">
+      <div class="fs-2 fw-bold text-info">{{ exams.items | selectattr('ai_generated','eq',1) | list | length }}</div>
+      <div class="text-muted small">AI Generated</div>
+    </div>
+  </div>
+</div>
+
+<!-- Exams table -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white border-0">
+    <span class="fw-semibold">All Examinations</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Title</th>
+            <th>Subject</th>
+            <th>Grade</th>
+            <th>Type</th>
+            <th>Marks</th>
+            <th>Date</th>
+            <th>AI</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for exam in exams.items %}
+          <tr>
+            <td>
+              <div class="fw-semibold">{{ exam.title }}</div>
+              <div class="text-muted small">{{ exam.academic_year or '' }}</div>
+            </td>
+            <td>{{ exam.subject }}</td>
+            <td><span class="badge bg-secondary">Grade {{ exam.grade }}</span></td>
+            <td>{{ exam.exam_type or '—' }}</td>
+            <td>{{ exam.total_marks }} / pass {{ exam.pass_marks }}</td>
+            <td>{{ exam.exam_date.strftime('%Y-%m-%d') if exam.exam_date else '—' }}</td>
+            <td>
+              {% if exam.ai_generated %}
+                <span class="badge bg-purple-subtle text-purple border" style="background:#ede9fe;color:#7c3aed;border-color:#c4b5fd!important">
+                  <i class="bi bi-stars"></i> AI
+                </span>
+              {% else %}
+                <span class="text-muted">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if exam.status == 'published' %}
+                <span class="badge bg-success">Published</span>
+              {% elif exam.status == 'draft' %}
+                <span class="badge bg-warning text-dark">Draft</span>
+              {% else %}
+                <span class="badge bg-secondary">{{ exam.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              <a href="{{ url_for('exams.detail', exam_id=exam.id) }}"
+                 class="btn btn-sm btn-outline-primary">View</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="9" class="text-center text-muted py-5">
+              <i class="bi bi-file-earmark-text fs-1 d-block mb-2 opacity-25"></i>
+              No exams yet.
+              <a href="{{ url_for('exams.generate') }}" class="ms-1">Generate your first exam →</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% if exams.pages > 1 %}
+  <div class="card-footer bg-white border-0 d-flex justify-content-center">
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        {% if exams.has_prev %}
+        <li class="page-item"><a class="page-link" href="?page={{ exams.prev_num }}">‹</a></li>
+        {% endif %}
+        {% for p in exams.iter_pages() %}
+          {% if p %}
+          <li class="page-item {{ 'active' if p == exams.page }}">
+            <a class="page-link" href="?page={{ p }}">{{ p }}</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">…</span></li>
+          {% endif %}
+        {% endfor %}
+        {% if exams.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ exams.next_num }}">›</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}{{ teacher.first_name }} {{ teacher.last_name }}{% endblock %}
+{% block page_title %}Teacher Detail{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0">{{ teacher.first_name }} {{ teacher.last_name }}</h4>
+    <div class="text-muted small">{{ teacher.teacher_id }} — {{ teacher.designation or 'Teacher' }}</div>
+  </div>
+  <a href="{{ url_for('teachers.index') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Personal Information</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">Full Name</th><td>{{ teacher.first_name }} {{ teacher.last_name }}</td></tr>
+          <tr><th class="text-muted">Gender</th><td>{{ teacher.gender or '—' }}</td></tr>
+          <tr><th class="text-muted">Phone</th><td>{{ teacher.phone or '—' }}</td></tr>
+          <tr><th class="text-muted">Email</th><td>{{ teacher.email or '—' }}</td></tr>
+          <tr><th class="text-muted">Citizenship No.</th><td>{{ teacher.citizenship_no or '—' }}</td></tr>
+          <tr><th class="text-muted">Permanent Address</th><td>{{ teacher.permanent_address or '—' }}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Professional Information</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">Specialization</th><td>{{ teacher.subject_specialization or '—' }}</td></tr>
+          <tr><th class="text-muted">Qualification</th><td>{{ teacher.highest_qualification or '—' }}</td></tr>
+          <tr><th class="text-muted">License No.</th><td>{{ teacher.teaching_license_no or '—' }}</td></tr>
+          <tr><th class="text-muted">Service Start</th><td>{{ teacher.service_start_date or '—' }}</td></tr>
+          <tr><th class="text-muted">Service Type</th><td>{{ teacher.service_type or '—' }}</td></tr>
+          <tr><th class="text-muted">Status</th><td>
+            <span class="badge bg-{{ 'success' if teacher.is_active else 'secondary' }}">{{ 'Active' if teacher.is_active else 'Inactive' }}</span>
+          </td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">Performance Scores (TPDI)</div>
+      <div class="card-body">
+        <div class="row g-3 text-center">
+          <div class="col-md-3">
+            <div class="fs-3 fw-bold text-primary">{{ teacher.tpdi_score|round(1) }}</div>
+            <div class="text-muted small">Overall TPDI</div>
+            <div class="badge bg-{{ 'success' if teacher.tpdi_score >= 70 else ('warning' if teacher.tpdi_score >= 50 else 'danger') }}">{{ teacher.tpdi_category or '—' }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="fs-3 fw-bold text-success">{{ teacher.attendance_score|round(1) }}</div>
+            <div class="text-muted small">Attendance Score</div>
+          </div>
+          <div class="col-md-3">
+            <div class="fs-3 fw-bold text-info">{{ teacher.punctuality_score|round(1) }}</div>
+            <div class="text-muted small">Punctuality Score</div>
+          </div>
+          <div class="col-md-3">
+            <div class="fs-3 fw-bold text-warning">{{ teacher.student_performance_score|round(1) }}</div>
+            <div class="text-muted small">Student Performance</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

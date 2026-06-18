@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ school.name_en }}{% endblock %}
+{% block page_title %}School Detail{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-0">{{ school.name_en }}</h4>
+    {% if school.name_np %}<div class="text-muted">{{ school.name_np }}</div>{% endif %}
+  </div>
+  <a href="{{ url_for('schools.index') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold">Basic Information</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">School Code</th><td><code>{{ school.school_code }}</code></td></tr>
+          <tr><th class="text-muted">EMIS ID</th><td>{{ school.emis_id or '—' }}</td></tr>
+          <tr><th class="text-muted">Type</th><td>{{ school.school_type or '—' }}</td></tr>
+          <tr><th class="text-muted">Level</th><td>{{ school.school_level or '—' }}</td></tr>
+          <tr><th class="text-muted">Status</th><td>
+            <span class="badge bg-{{ 'success' if school.status == 'active' else 'secondary' }}">{{ school.status }}</span>
+          </td></tr>
+          <tr><th class="text-muted">Principal</th><td>{{ school.principal_name or '—' }}</td></tr>
+          <tr><th class="text-muted">Phone</th><td>{{ school.phone or '—' }}</td></tr>
+          <tr><th class="text-muted">Email</th><td>{{ school.email or '—' }}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-header bg-white fw-semibold">Location & Stats</div>
+      <div class="card-body">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><th class="text-muted" width="40%">Province</th><td>{{ school.province_id or '—' }}</td></tr>
+          <tr><th class="text-muted">District</th><td>{{ school.district_id or '—' }}</td></tr>
+          <tr><th class="text-muted">Municipality</th><td>{{ school.municipality_id or '—' }}</td></tr>
+          <tr><th class="text-muted">Ward</th><td>{{ school.ward_number or '—' }}</td></tr>
+          <tr><th class="text-muted">Address</th><td>{{ school.address or '—' }}</td></tr>
+          <tr><th class="text-muted">Teachers</th><td><span class="fw-bold text-primary">{{ school.num_teachers }}</span></td></tr>
+          <tr><th class="text-muted">Students</th><td><span class="fw-bold text-success">{{ school.num_students }}</span></td></tr>
+          <tr><th class="text-muted">Established</th><td>{{ school.established_year or '—' }}</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Add Teacher{% endblock %}
+{% block page_title %}Add Teacher{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-person-plus me-2 text-success"></i>Register a Teacher
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
+              <input type="text" name="first_name" class="form-control" placeholder="e.g. Ram" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
+              <input type="text" name="last_name" class="form-control" placeholder="e.g. Sharma" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="">— Select —</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Designation</label>
+              <select name="designation" class="form-select">
+                <option value="Teacher">Teacher</option>
+                <option value="Head Teacher">Head Teacher</option>
+                <option value="Assistant Teacher">Assistant Teacher</option>
+                <option value="Temporary Teacher">Temporary Teacher</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Subject Specialization</label>
+              <input type="text" name="subject" class="form-control" placeholder="e.g. Mathematics">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Highest Qualification</label>
+              <input type="text" name="qualification" class="form-control" placeholder="e.g. B.Ed., M.Ed.">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Service Type</label>
+              <select name="service_type" class="form-select">
+                <option value="permanent">Permanent</option>
+                <option value="temporary">Temporary</option>
+                <option value="rahat">Rahat</option>
+                <option value="contract">Contract</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Phone</label>
+              <input type="text" name="phone" class="form-control" placeholder="98XXXXXXXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" name="email" class="form-control" placeholder="teacher@edu.np">
+            </div>
+            <div class="col-12 d-flex gap-2 mt-2">
+              <button type="submit" class="btn btn-success px-4">
+                <i class="bi bi-check-circle me-1"></i>Add Teacher
+              </button>
+              <a href="{{ url_for('teachers.add') }}" class="btn btn-outline-secondary">
+                Add Another
+              </a>
+              <a href="{{ url_for('dashboard.school') }}" class="btn btn-link">
+                Back to Dashboard
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

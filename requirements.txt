@@ -8,8 +8,11 @@ Flask-Limiter==3.7.0
 Werkzeug==3.0.3
 python-dotenv==1.0.1
 
-# PostgreSQL (Vercel Postgres)
-psycopg2-binary==2.9.9
+# MySQL (local dev)
+PyMySQL==1.1.1
+
+# PostgreSQL (Render production only — not needed locally)
+# psycopg2-binary==2.9.9
 
 # AI
 openai==1.40.0
@@ -18,7 +21,7 @@ google-generativeai==0.7.2
 # PDF
 PyPDF2==3.0.1
 pdfplumber==0.11.4
-Pillow==10.4.0
+# Pillow==11.1.0  # No Python 3.14 support yet — skip for now
 
 # Utils
 requests==2.32.3
@@ -27,5 +30,5 @@ APScheduler==3.10.4
 marshmallow==3.21.3
 gunicorn==22.0.0
 
-# NOTE: opencv, pytesseract, pandas, numpy, scikit-learn are excluded from Vercel.
-# For full OCR/ML features, deploy with Docker (docker-compose.yml).
+# NOTE: opencv, pytesseract, pandas, numpy, scikit-learn are excluded (heavy ML libs).
+# Add them manually if needed for OCR/ML features.

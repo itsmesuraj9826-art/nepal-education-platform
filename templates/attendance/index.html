@@ -88,10 +88,6 @@
               {% endif %}
             </td>
           </tr>
-          {% else %}
-          <tr>
-            <td colspan="8" class="text-center text-muted py-5">No attendance records for today yet.</td>
-          </tr>
           {% endfor %}
         </tbody>
       </table>
@@ -103,7 +99,10 @@
 {% block scripts %}
 <script>
 $(document).ready(function() {
-  $('#att-table').DataTable({ pageLength: 25 });
+  $('#att-table').DataTable({
+    pageLength: 25,
+    language: { emptyTable: 'No attendance records for today yet.' }
+  });
 
   const rows = document.querySelectorAll('#att-table tbody tr');
   let present=0, absent=0, late=0, fraud=0;

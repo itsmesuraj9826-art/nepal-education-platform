@@ -1,6 +1,7 @@
 import os
 from datetime import timedelta
 from dotenv import load_dotenv
+from sqlalchemy.engine import URL
 
 load_dotenv()
 
@@ -8,21 +9,22 @@ load_dotenv()
 def _db_uri():
     """
     Priority:
-      1. DATABASE_URL  (Vercel Postgres sets this automatically)
-      2. Individual DB_HOST/USER/PASS vars (local dev / Docker)
-    Vercel Postgres gives a postgres:// URI — SQLAlchemy needs postgresql://
+      1. DATABASE_URL env var (Render/Neon production — postgresql:// or postgres://)
+      2. Individual DB_* vars → MySQL for local dev
+    Uses URL.create() so special chars in passwords (e.g. @) are handled safely.
     """
     url = os.getenv('DATABASE_URL', '')
     if url:
-        # Vercel uses 'postgres://' — SQLAlchemy needs 'postgresql://'
         return url.replace('postgres://', 'postgresql://', 1)
 
-    host     = os.getenv('DB_HOST', 'localhost')
-    port     = os.getenv('DB_PORT', '5432')
-    name     = os.getenv('DB_NAME', 'nepal_edu_platform')
-    user     = os.getenv('DB_USER', 'postgres')
-    password = os.getenv('DB_PASSWORD', '')
-    return f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{name}'
+    return URL.create(
+        drivername='mysql+pymysql',
+        username=os.getenv('DB_USER', 'root'),
+        password=os.getenv('DB_PASSWORD', ''),
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=int(os.getenv('DB_PORT', '3306')),
+        database=os.getenv('DB_NAME', 'nepal_edu_platform'),
+    )
 
 
 class Config:

@@ -39,6 +39,14 @@ def create_app(env_name: str = 'default') -> Flask:
     app.register_blueprint(exams_bp,      url_prefix='/exams')
     app.register_blueprint(api_bp,        url_prefix='/api/v1')
 
+    # ── Jinja2 filters ────────────────────────────────────
+    @app.template_filter('format_number')
+    def format_number(value):
+        try:
+            return '{:,}'.format(int(value))
+        except (ValueError, TypeError):
+            return value
+
     # ── Root redirect ─────────────────────────────────────
     from flask import redirect, url_for
 
